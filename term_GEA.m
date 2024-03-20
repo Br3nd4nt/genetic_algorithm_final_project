@@ -19,7 +19,7 @@ VarMax=1;          % Upper Bound of Variables
 nObj=2;   %Both of them are minimization 
 
 
-%% NSGA-II Parameters
+%% GEA Parameters
 
 MaxIt=50;      % Maximum Number of Iterations
 
@@ -35,11 +35,20 @@ mu=0.02;                    % Mutation Rate
 
 sigma=0.1*(VarMax-VarMin);  % Mutation Step Size
 
+%% masks hyperparameters
 masks_bitmap = [1 1 1];
 operations_bitmap = [1 1 1];
 inejction_rate = 0.4;
 epsilon = 0.05;
+mask_p_percent = 0.6;
+single_threshold = 12;
+double_threshold = 10;
+triple_threshold = 8;
 masks = masks_class();
+
+%% mortality 
+max_age = 20;
+max_operations = 10;
 
 %% Initialization
 
@@ -49,6 +58,11 @@ empty_individual.Rank=[];
 empty_individual.DominationSet=[];
 empty_individual.DominatedCount=[];
 empty_individual.CrowdingDistance=[];
+
+%% FOR GEA ONLY
+empty_individual.age = 0;
+empty_individual.operations = 0;
+
 
 pop=repmat(empty_individual,nPop,1);
 
@@ -76,15 +90,22 @@ pop=CalcCrowdingDistance(pop,F);
 
 for it=1:MaxIt
     
+    for len=1:size(pop, 1) 
+        pop(len).age = pop(len).age + 1;
+    end
+
     % Crossover
     popc=repmat(empty_individual,nCrossover/2,2);
     for k=1:nCrossover/2
         
         i1=randi([1 nPop]);
         p1=pop(i1);
-        
+
         i2=randi([1 nPop]);
         p2=pop(i2);
+
+        pop(i1).operations = pop(i1).operations + 1;
+        pop(i2).operations = pop(i2).operations + 1;
         
         [popc(k,1).Position, popc(k,2).Position]=Crossover(p1.Position,p2.Position);
         
@@ -100,6 +121,7 @@ for it=1:MaxIt
         
         i=randi([1 nPop]);
         p=pop(i);
+        pop(i).operations = pop(i).operations + 1;
         
         popm(k).Position=Mutate(p.Position,mu,sigma);
         
@@ -108,16 +130,16 @@ for it=1:MaxIt
     end
     
     %mask creation
-    masks_to_choose = zeros(100 * 0.6, 35, 3);
+    masks_to_choose = zeros(100 * mask_p_percent, size(pop(1).Position, 2), 3);
     if masks_bitmap(1) == 1
-    masks_to_choose(:, :, 1) = masks.create_single_gene_mask(pop, 0.05, 0.60, 5);
+    masks_to_choose(:, :, 1) = masks.create_single_gene_mask(pop, epsilon, mask_p_percent, single_threshold);
 
     end
     if masks_bitmap(2) == 1
-    masks_to_choose(:, :, 2) = masks.create_double_gene_mask(pop, 0.05, 0.60, 5);
+    masks_to_choose(:, :, 2) = masks.create_double_gene_mask(pop, epsilon, mask_p_percent, double_threshold);
     end
     if masks_bitmap(3) == 1
-    masks_to_choose(:, :, 3) = masks.create_triple_gene_mask(pop, 0.05, 0.60, 5);
+    masks_to_choose(:, :, 3) = masks.create_triple_gene_mask(pop, epsilon, mask_p_percent, triple_threshold);
     end
 
     % first operation
@@ -143,7 +165,7 @@ for it=1:MaxIt
             
             i=randi([1 nPop]);
             p=pop(i);
-            
+            pop(i).operations = pop(i).operations + 1;
             pop_sc_2(k).Position=masks.second_scenario(p.Position, mu, sigma, masks.get_random_mask(masks_bitmap, masks_to_choose));
             
             pop_sc_2(k).Cost=CostFunction(pop_sc_2(k).Position);
@@ -174,15 +196,14 @@ for it=1:MaxIt
          pop_sc_3
          ]; %#ok
 
-% clearing empty solutions
+% clearing empty solutions and check ages
 k = numel(pop);
 while k >= 1
     if k > numel(pop) 
         k = k - 1;
         continue
     else 
-        tmp = pop(k).Cost;
-        if isempty(tmp)
+        if isempty(pop(k).Cost) ||  pop(k).age > max_age || pop(k).operations > max_operations
             pop(k) = [];
         end
     end

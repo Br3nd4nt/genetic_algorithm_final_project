@@ -96,7 +96,7 @@ methods
            % find dominant
            vals = sum(mask, 2);
            [~, I] = max(vals);
-           
+           population(I).operations = population(I).operations + 1;
 
            number_of_crossover = ceil(size(population, 1) * crossover_rate / 2);
            offsprings = zeros(number_of_crossover * 2, size(population(1).Position, 2));
@@ -105,6 +105,9 @@ methods
                 while (I == second_parent)
                     second_parent = randi(size(population, 1));
                 end
+                
+                population(second_parent).operations = population(second_parent).operations + 1;
+
                 crossover_point = randi([1, size(population(1).Position, 2)]);
 
                 offsprings(i * 2, 1:crossover_point) = population(I).Position(1, 1:crossover_point);
@@ -125,7 +128,6 @@ methods
         end
         % y = x.copy();
         y = x(:);
-
         for i = 1:nMu
             % disp(mask)
             % disp(nMu)
@@ -141,9 +143,10 @@ methods
             vals = sum(mask, 2);
             [~, I] = max(vals);
             dominant = population(I);
+            dominant.operations = dominant.operations + 1;
             dominant_mask = mask(I, :);
             indicies = randperm((size(population, 1) - size(mask, 1)), number_of_injections) + size(mask, 1);
-
+            
             injected = population(indicies, :);
             
             for i=1:size(injected, 1)

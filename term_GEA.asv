@@ -19,9 +19,9 @@ VarMax=1;          % Upper Bound of Variables
 nObj=2;   %Both of them are minimization 
 
 
-%% NSGA-II Parameters
+%% GEA Parameters
 
-MaxIt=200;      % Maximum Number of Iterations
+MaxIt=50;      % Maximum Number of Iterations
 
 nPop=100;        % Population Size
 
@@ -35,11 +35,20 @@ mu=0.02;                    % Mutation Rate
 
 sigma=0.1*(VarMax-VarMin);  % Mutation Step Size
 
+%% masks hyperparameters
 masks_bitmap = [1 1 1];
 operations_bitmap = [1 1 1];
 inejction_rate = 0.4;
 epsilon = 0.05;
+mask_p_percent = 0.6;
+single_threshold = 12;
+double_threshold = 10;
+triple_threshold = 8;
 masks = masks_class();
+
+%% mortality 
+max_age = 20;
+max_ope
 
 %% Initialization
 
@@ -49,6 +58,11 @@ empty_individual.Rank=[];
 empty_individual.DominationSet=[];
 empty_individual.DominatedCount=[];
 empty_individual.CrowdingDistance=[];
+
+%% FOR GEA ONLY
+empty_individual.age = 0;
+empty_individual.operations = 0;
+
 
 pop=repmat(empty_individual,nPop,1);
 
@@ -107,32 +121,34 @@ for it=1:MaxIt
         
     end
     
-    %TODO DO OTHERS
-    masks_to_choose = {};
+    %mask creation
+    masks_to_choose = zeros(100 * mask_p_percent, size(pop(1).Position, 2), 3);
     if masks_bitmap(1) == 1
-    masks_to_choose(end + 1) = masks.create_single_gene_mask(pop, 0.05, 0.60, 5);
+    masks_to_choose(:, :, 1) = masks.create_single_gene_mask(pop, epsilon, mask_p_percent, single_threshold);
 
     end
     if masks_bitmap(2) == 1
-    masks_to_choose(:, :, end) = masks.create_double_gene_mask(pop, 0.05, 0.60, 5);
+    masks_to_choose(:, :, 2) = masks.create_double_gene_mask(pop, epsilon, mask_p_percent, double_threshold);
     end
     if masks_bitmap(3) == 1
-    masks_to_choose(:, :, end) = masks.create_triple_gene_mask(pop, 0.05, 0.60, 5);
+    masks_to_choose(:, :, 3) = masks.create_triple_gene_mask(pop, epsilon, mask_p_percent, triple_threshold);
     end
 
+    % first operation
     if operations_bitmap(1) == 1
     pop_sc_1_vals = masks.first_scenario(pop, masks.get_random_mask(masks_bitmap, masks_to_choose), pCrossover);
     pop_sc_1=repmat(empty_individual,size(pop_sc_1_vals, 1),1);
 
     for k=1:size(pop_sc_1_vals, 1)
-        popm_sc_1(k).Position = pop_sc_1_vals(k, :);
+        pop_sc_1(k).Position = pop_sc_1_vals(k, :);
 
-        popm_sc_1(k).Cost=CostFunction(popm_sc_1(k).Position);
+        pop_sc_1(k).Cost=CostFunction(pop_sc_1(k).Position);
     end
     else
         pop_sc_1 = [];
     end
     
+    %second operation
     if operations_bitmap(2) == 1
         pop_sc_2 = repmat(empty_individual,nMutation,1);
     
@@ -144,37 +160,23 @@ for it=1:MaxIt
             
             pop_sc_2(k).Position=masks.second_scenario(p.Position, mu, sigma, masks.get_random_mask(masks_bitmap, masks_to_choose));
             
-            pop_sc_2(k).Cost=CostFunction(popm(k).Position);
+            pop_sc_2(k).Cost=CostFunction(pop_sc_2(k).Position);
             
         end
     else 
         pop_sc_2 = [];
     end
 
+    %third operaion
     if operations_bitmap(3) == 1
-        pop_sc_3_vals = masks.third_scenario(pop, masks.get_random_mask(masks_bitmap, masks_to_choose), 0.1);
-        
-        
-        popm_sc_3=repmat(empty_individual,size(pop_sc_3_vals, 1),1);
+        pop_sc_3 = masks.third_scenario(pop, masks.get_random_mask(masks_bitmap, masks_to_choose), 0.1);
     
         for k=1:size(pop_sc_3_vals, 1)
-            popm_sc_3(k).Position = pop_sc_3_vals(k, :);
     
-            popm_sc_3(k).Cost=CostFunction(popm_sc_3(k).Position);
+            pop_sc_3(k).Cost=CostFunction(pop_sc_3(k).Position);
         end
     else 
-        popm_sc_3= [];
-    end
-
-    
-    for k = numel(pop):1:-1
-    % Check if Cost field is empty
-    if isempty(pop(k).Cost)
-      % Remove element using logical indexing
-      pop(k) = [];
-      % Decrement loop counter to account for removed element
-      % i = i - 1;
-    end
+        pop_sc_3= [];
     end
     
     % Merge
@@ -185,19 +187,8 @@ for it=1:MaxIt
          pop_sc_2
          pop_sc_3
          ]; %#ok
-        
-    % need some filtering 
-% for k = numel(pop):1:-1
-%     % Check if Cost field is empty
-%     if isempty(pop(k).Cost)
-%       % Remove element using logical indexing
-%       pop(k) = [];
-%       k = k + 1
-%       % Decrement loop counter to account for removed element
-%       % i = i - 1;
-%     end
-% end
 
+% clearing empty solutions
 k = numel(pop);
 while k >= 1
     if k > numel(pop) 
@@ -213,9 +204,6 @@ while k >= 1
 end
 
     for k=1:numel(pop)
-        % if isempty(pop(k).Cost)
-        %     disp("WRONG")
-        % end
         if size(pop(k).Position, 1) > 1
             pop(k).Position = pop(k).Position';
         end

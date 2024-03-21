@@ -21,7 +21,7 @@ nObj=2;   %Both of them are minimization
 
 %% GEA Parameters
 
-MaxIt=50;      % Maximum Number of Iterations
+MaxIt=1000;      % Maximum Number of Iterations
 
 nPop=100;        % Population Size
 
@@ -177,9 +177,9 @@ for it=1:MaxIt
 
     %third operaion
     if operations_bitmap(3) == 1
-        pop_sc_3 = masks.third_scenario(pop, masks.get_random_mask(masks_bitmap, masks_to_choose), 0.1);
+        pop_sc_3 = masks.third_scenario(pop, masks.get_random_mask(masks_bitmap, masks_to_choose), inejction_rate);
     
-        for k=1:size(pop_sc_3_vals, 1)
+        for k=1:size(pop_sc_3, 1)
     
             pop_sc_3(k).Cost=CostFunction(pop_sc_3(k).Position);
         end
@@ -265,6 +265,6 @@ res=mid/ms;
 %% Results
 disp('====================');
 z1=pop(1).Cost(1);
-z1
+% z1
 
-plot(GEA)
+% plot(GEA)

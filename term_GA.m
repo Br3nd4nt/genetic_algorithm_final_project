@@ -21,7 +21,7 @@ nObj=2;   %Both of them are minimization
 
 %% NSGA-II Parameters
 
-MaxIt=500;      % Maximum Number of Iterations
+MaxIt=1000;      % Maximum Number of Iterations
 
 nPop=100;        % Population Size
 
@@ -134,7 +134,7 @@ for it=1:MaxIt
     GA(it)=F1(1).Cost(1);
 
     % Show Iteration Information
-    disp(['Iteration ' num2str(it) ': Number of F1 Members = ' num2str(numel(F1))]);
+    disp(['Iteration ' num2str(it) ': Number of F1 Members = ' num2str(numel(F1)) ' Best cost ' num2str(GA(it))]);
     
     % Plot F1 Costs
     % figure(1);
@@ -160,4 +160,4 @@ z1
 
 
 
-plot(GA)
+% plot(GA)

@@ -19,7 +19,7 @@ VarMax=1;          % Upper Bound of Variables
 nObj=2;     % Both of them are minimization 
 %% SA Parameters 
 
-Maxit=500;      % Maximum Number of Iterations
+Maxit=1000;      % Maximum Number of Iterations
 T=500;          % Initial temprature 
 damp=0.99;     % Rate of reduction 
 
@@ -118,16 +118,20 @@ end
 % res=mid/ms;
 %  disp([ ' NPS= '  num2str(nps) '   CPU TIME= ' num2str( cputime)  '   MID= ' num2str(mid) '   SNS=' num2str(sns) '  MS=' num2str(ms) '  Response=' num2str(res) ]); 
 
+
  %% Results
 disp('====================');
 disp(BestSol)
+disp('====================');
+disp("CPU TIME")
+disp(toc)
 % z1=BestSol.Cost%(1);
 % z1
 % z2=BestSol.Cost(2);
 % z2
 %% figures
-figure(1);
-plot(SA);
+% figure(1);
+% plot(SA);
 % figure(2);
 % plot(BestCost2);
 % figure(3);

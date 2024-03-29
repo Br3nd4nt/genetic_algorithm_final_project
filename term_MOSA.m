@@ -1,10 +1,20 @@
 %% SA 
-clc;
+% clc;
 % clear all;
-close all;
+% close all;
+model=model();
+A_CODE_RESULTS = [];
+A_CURRENT_ITERATIONS_COUNT = 0;
+A_MAX_CODE_ITERATIONS_ = 5;
+Maxit= 2000;      % Maximum Number of Iterations
+
+while A_CURRENT_ITERATIONS_COUNT < A_MAX_CODE_ITERATIONS_
+    A_CURRENT_ITERATIONS_COUNT = A_CURRENT_ITERATIONS_COUNT + 1;
+
+ 
 %% Porblem Definition
 tic;
-model=model(); 
+% model=model(); 
 
 CostFunction=@(x) MyCost(x,model);      % Cost Function
 
@@ -19,7 +29,7 @@ VarMax=1;          % Upper Bound of Variables
 nObj=2;     % Both of them are minimization 
 %% SA Parameters 
 
-Maxit=1000;      % Maximum Number of Iterations
+
 T=500;          % Initial temprature 
 damp=0.99;     % Rate of reduction 
 
@@ -35,6 +45,8 @@ empty_individual.DominationSet=[];
 empty_individual.DominatedCount=[];
 empty_individual.CrowdingDistance=[];
 
+
+   
 Sol=repmat(empty_individual,1);
 NewSol=repmat(empty_individual,1);
 % Initial solution 
@@ -137,3 +149,6 @@ disp(toc)
 % figure(3);
 % PlotCosts(F1);
 
+
+A_CODE_RESULTS = [A_CODE_RESULTS; BestSol.Cost(1) toc];
+end

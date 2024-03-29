@@ -1,5 +1,5 @@
-% clc;
-% clear all;
+clc;
+clear all;
 % close all;
 % model=model();
 A_CODE_RESULTS = [];
@@ -9,10 +9,8 @@ MaxIt= 200;      % Maximum Number of Iterations
 
 while A_CURRENT_ITERATIONS_COUNT < A_MAX_CODE_ITERATIONS_
     A_CURRENT_ITERATIONS_COUNT = A_CURRENT_ITERATIONS_COUNT + 1;
+tic;
 
-
-
-tic
 %% Problem Definition
 
 % model=model();
@@ -56,6 +54,8 @@ single_threshold = 12;
 double_threshold = 10;
 triple_threshold = 8;
 masks = masks_class();
+
+tabu = tabu_search();
 
 %% mortality 
 max_age = 20;
@@ -227,7 +227,21 @@ end
         end
     end
 
+    %% TABU SEARCH
+    
+    init_solution = pop(1);
+    tabu_max_iteraions = 30;
+    tabu_list_size = floor(nPop / 2);
+    tabu_best = tabu.search(model, init_solution, tabu_max_iteraions, tabu_list_size);
+    % return;
+    pop(end, 1) = tabu_best;
+    % disp(tabu_best.Cost(1))
+    if (tabu_best.Cost(1) < init_solution.Cost(1))
+        disp("found better!")
+    end
 
+
+    %% other stuff
 
     % Non-Dominated Sorting
     [pop, F]=NonDominatedSorting(pop);
@@ -279,4 +293,5 @@ z1=pop(1).Cost(1);
 % z1
 A_CODE_RESULTS = [A_CODE_RESULTS; pop(1).Cost(1) toc];
 end
+
 % plot(GEA)

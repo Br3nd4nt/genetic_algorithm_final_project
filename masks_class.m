@@ -132,7 +132,7 @@ methods
             % disp(mask)
             % disp(nMu)
             if mask(j) == 0  % Only mutate if mask bit is 0
-                y(j(i)) = x(j(i)) + (sigma(i) .* x(j(i)));  % Use sigma(i) for individual mutations
+                y(j(i)) = x(j(i)) + (sigma .* x(j(i)));  % Use sigma(i) for individual mutations
             end
         end
     end

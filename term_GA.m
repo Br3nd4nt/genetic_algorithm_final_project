@@ -1,10 +1,19 @@
-clc;
-% clear;
-close all;
+% clc;
+% clear all;
+% close all;
+% model=model();
+A_CODE_RESULTS = [];
+A_CURRENT_ITERATIONS_COUNT = 0;
+A_MAX_CODE_ITERATIONS_ = 5;
+MaxIt= 200;      % Maximum Number of Iterations
+ 
+while A_CURRENT_ITERATIONS_COUNT < A_MAX_CODE_ITERATIONS_
+    A_CURRENT_ITERATIONS_COUNT = A_CURRENT_ITERATIONS_COUNT + 1;
+
 tic
 %% Problem Definition
 
-model=model();
+% model=model();
 
 CostFunction=@(x) MyCost(x,model);      % Cost Function
 
@@ -21,7 +30,7 @@ nObj=2;   %Both of them are minimization
 
 %% NSGA-II Parameters
 
-MaxIt=1000;      % Maximum Number of Iterations
+% MaxIt=1000;      % Maximum Number of Iterations
 
 nPop=100;        % Population Size
 
@@ -159,5 +168,6 @@ z1
 % z2
 
 
-
+A_CODE_RESULTS = [A_CODE_RESULTS; pop(1).Cost(1) toc];
+end
 % plot(GA)

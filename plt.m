@@ -1,6 +1,10 @@
 figure(1)
 hold on;
-% plot(SA)
+plot(SA)
+plot(GA)
+plot(GEA_1)
+plot(GEA_2)
+plot(GEA_3)
 plot(GEA)
-% plot(GA)
-% legend(["SA", "GEA", "GA"])
+plot(GEA_tabu)
+legend(["SA", "GA", "GEA_1", "GEA_2", "GEA_3", "GEA", "GEA_{tabu}"])

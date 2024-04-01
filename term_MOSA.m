@@ -1,6 +1,6 @@
 %% SA 
-% clc;
-% clear all;
+clc;
+clear all;
 % close all;
 model=model();
 A_CODE_RESULTS = [];
@@ -151,4 +151,5 @@ disp(toc)
 
 
 A_CODE_RESULTS = [A_CODE_RESULTS; BestSol.Cost(1) toc];
+
 end

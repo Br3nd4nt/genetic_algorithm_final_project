@@ -48,7 +48,8 @@ sigma=0.1*(VarMax-VarMin);  % Mutation Step Size
 
 %% masks hyperparameters
 masks_bitmap = [1 1 1];
-operations_bitmap = [1 1 1];
+operations_bitmap = [1 0 0];
+
 inejction_rate = 0.4;
 epsilon = 0.05;
 mask_p_percent = 0.6;
@@ -85,7 +86,7 @@ for i=1:nPop
     
 end
 
-GEA=zeros(MaxIt,1);
+
 
 % Non-Dominated Sorting
 [pop, F]=NonDominatedSorting(pop);

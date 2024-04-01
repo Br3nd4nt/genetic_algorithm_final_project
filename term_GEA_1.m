@@ -9,8 +9,10 @@ MaxIt= 200;      % Maximum Number of Iterations
 
 while A_CURRENT_ITERATIONS_COUNT < A_MAX_CODE_ITERATIONS_
     A_CURRENT_ITERATIONS_COUNT = A_CURRENT_ITERATIONS_COUNT + 1;
-tic;
 
+
+
+tic
 %% Problem Definition
 
 % model=model();
@@ -46,7 +48,8 @@ sigma=0.1*(VarMax-VarMin);  % Mutation Step Size
 
 %% masks hyperparameters
 masks_bitmap = [1 1 1];
-operations_bitmap = [1 1 1];
+operations_bitmap = [1 0 0];
+GEA_1=zeros(MaxIt,1);
 inejction_rate = 0.4;
 epsilon = 0.05;
 mask_p_percent = 0.6;
@@ -54,8 +57,6 @@ single_threshold = 12;
 double_threshold = 10;
 triple_threshold = 8;
 masks = masks_class();
-
-tabu = tabu_search();
 
 %% mortality 
 max_age = 20;
@@ -85,7 +86,7 @@ for i=1:nPop
     
 end
 
-GEA_tabu=zeros(MaxIt,1);
+
 
 % Non-Dominated Sorting
 [pop, F]=NonDominatedSorting(pop);
@@ -227,21 +228,7 @@ end
         end
     end
 
-    %% TABU SEARCH
-    
-    init_solution = pop(1);
-    tabu_max_iteraions = 30;
-    tabu_list_size = floor(nPop / 2);
-    tabu_best = tabu.search(model, init_solution, tabu_max_iteraions, tabu_list_size);
-    % return;
-    pop(end, 1) = tabu_best;
-    % disp(tabu_best.Cost(1))
-    if (tabu_best.Cost(1) < init_solution.Cost(1))
-        disp("found better!")
-    end
 
-
-    %% other stuff
 
     % Non-Dominated Sorting
     [pop, F]=NonDominatedSorting(pop);
@@ -267,10 +254,10 @@ end
     % Store F1
     F1=pop(F{1});
     
-    GEA_tabu(it)=F1(1).Cost(1);
+    GEA_1(it)=F1(1).Cost(1);
 
     % Show Iteration Information
-    disp(['Iteration ' num2str(it) ': Number of F1 Members = ' num2str(numel(F1)) ' Best cost ' num2str(GEA_tabu(it))]);
+    disp(['Iteration ' num2str(it) ': Number of F1 Members = ' num2str(numel(F1)) ' Best cost ' num2str(GEA_1(it))]);
     % disp(['Iteration ' num2str(GEA(it))]);
     % Plot F1 Costs
     % figure(1);
@@ -293,5 +280,4 @@ z1=pop(1).Cost(1);
 % z1
 A_CODE_RESULTS = [A_CODE_RESULTS; pop(1).Cost(1) toc];
 end
-
 % plot(GEA)

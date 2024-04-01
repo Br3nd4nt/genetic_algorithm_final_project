@@ -2,16 +2,15 @@ function model = model()
 %% selection of the size of test problems:
 %%%%%%%%%% P1
 
-m=15; % Number of suppliers 
-p=9; % Number of potential plants 
+m=23; % Number of suppliers 
+p=13; % Number of potential plants 
 
-n=12; % Number of potential distributers 
-i=15; % Number of customers 
-j=12;  % Number of potential recovering centers 
-d=7;  % Number of potential remanufacturing ecnters 
-r=6;  % Number of potential recycling centers 
-s=4;  % Number of disposal centers 
-
+n=16; % Number of potential distributers 
+i=21; % Number of customers 
+j=16;  % Number of potential recovering centers 
+d=11;  % Number of potential remanufacturing ecnters 
+r=10;  % Number of potential recycling centers 
+s=6;  % Number of disposal centers 
 
 % m=3; % Number of suppliers 
 % p=6; % Number of potential plants 
